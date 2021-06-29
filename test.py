@@ -69,11 +69,8 @@ for p in tqdm(L):
 
 probs = torch.tensor(preds).sigmoid()
 
-print("probs", probs)
-print("probs mean", torch.mean(probs))
-print("probs sd", torch.std(probs))
-n, bins, patches = plt.hist(probs, 100, facecolor='blue', alpha=0.5)
-plt.show()
+# n, bins, patches = plt.hist(probs, 100, facecolor='blue', alpha=0.5)
+# plt.show()
 
 for p in probs > threshold:
     print(int(p))
