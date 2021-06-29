@@ -1,3 +1,5 @@
 Data/archive
 .idea
 .DS_Store
+__pycache__/
+Models/__pycache__/

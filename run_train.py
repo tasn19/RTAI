@@ -11,8 +11,9 @@ from sklearn.model_selection import train_test_split
 
 
 from train import train_model, calculate_score
-from CovidDataLoader import MyTopCropTransform, CovidDataSet
-from Models import C19Xception, C19ResNet
+from data import MyTopCropTransform, CovidDataSet
+from Models.C19Xception import C19Xception
+from Models.C19ResNet import C19ResNet
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--image_size", type=int, default=299, help="resize images to this size")
