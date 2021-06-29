@@ -34,11 +34,15 @@ SN = sensitivity of the COVID-19 negative class
 SP = sensitivity of the COVID-19 positive class
 
 # Results 
-add graphs?
-
 Our best model achieved a score of 15.960075 (SP: 1, SN: 0.995, PP: 0.995025, PN: 1) on the test set with the probability threshold for the positive class set to 0.50. On the competition set it achieved a score of 14.94 (SP: 0.88, PP: 1, SN: 0.99, PN: 0.86). 
 
 We adjusted the probability threshold for the positive class to reduce false negatives (accounting for cases which the model predicted to have a lower probability of being positive but are in fact positive). The model achieved a score of 15.762621 (SP:1, SN:0.97, PP: 0.970874 PN: 1) on the test set with the probability threshold set to 0.35. It’s performance on the competition set was 15.30 (SP: 0.93, PP: 0.99, SN: 0.98, PN: 0.93).
+
+Plots of PN, PP, SN, and SP for our best model during training and validation over 10 epochs:
+![figure1](https://github.com/tasn19/RTAI/blob/main/media/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003-details_history.png)
+
+Plots of total score and loss for our best model during training and validation over 10 epochs:
+![figure2](https://github.com/tasn19/RTAI/blob/main/media/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003-history.png)
 
 
 ## References
