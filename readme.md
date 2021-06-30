@@ -20,9 +20,12 @@ The default hyper-parameters are set to the values used for training the final m
 ```shell
 python run_train.py -h
 ```
+Alternatively, run the code on Google Colab notebook RTAI_CovidCompetition_final.ipynb
 
 # Our Approach
-Our solution implements a neural network to identify chest X-rays as either COVID-19 positive or COVID-19-negative. We used the PyTorch torchvision package and Google Colab. We started by conducting a literature search to review existing work implementing neural networks to screen chest X-rays for abnormalities (COVID-19 and other lung diseases). The findings of our literature search inspired the design of our algorithm. The components of our approach are as follows:
+Our solution implements a neural network to identify chest X-rays as either COVID-19 positive or COVID-19-negative. We used the PyTorch torchvision package and Google Colab. The Colab notebook we used for the competition is shared in this repo. Alternatively, python scripts to run the code are available as well.
+
+We started by conducting a literature search to review existing work implementing neural networks to screen chest X-rays for abnormalities (COVID-19 and other lung diseases). The findings of our literature search inspired the design of our algorithm. The components of our approach are as follows:
 
 #### Data Augmentation Strategy 
 We crop out the top 8% of the x-ray images to prevent the neural network from picking up on artifacts such as text which are commonly present at the top of the x-ray outside the chest region [1]. We apply a random affine transformation (including a rotation of 5 degrees and translation of 5% of the image width and height). We also resize all images to the same size. For a network learning from chest x-rays, data augmentation may not always improve performance because the pattern to be identified is not fixed like it is in traditional computer vision tasks. For example is a classic object detection problem, the network searches for e.g. a car in an image and the shape of the car is known. How an abnormality causing COVID-19 appears in the lungs is not as well-defined. In addition, some augmentations e.g. shearing and reflection, may result in images not practically seen in clinical settings, and therefore would be misleading for the algorithm. Our selected augmentations follow those approved by radiologists: rotations between -5 and 5 degrees, equal scaling in both x and y axes, and translation [2].
