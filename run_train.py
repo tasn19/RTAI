@@ -9,7 +9,6 @@ from torchvision import transforms
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 
-
 from train import train_model, calculate_score
 from data import MyTopCropTransform, CovidDataSet
 from Models.C19Xception import C19Xception
@@ -26,11 +25,14 @@ ap.add_argument("--drop_out", type=bool, default=False, help="")
 ap.add_argument("--BCE_pos_weight", type=int, default=50, help="")
 ap.add_argument("--train_batchsize", type=int, default=32, help="")
 ap.add_argument("--models_folder", type=str, default="./", help="folder path to save the model")
+ap.add_argument("--num_workers", type=int, default=4, help="num_workers for dataloader")
 args = vars(ap.parse_args())
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 val_batchsize = 16
 test_batchsize = 16
+
+
 
 # TODO: try rescale and crop
 # TODO: normalize to -1 and 1
@@ -81,11 +83,11 @@ details_history_path = os.path.join(PATH, CLASS_NAME + "-details_history.png")
 CHECKPOINT_PATH = os.path.join(PATH, CLASS_NAME + "-Checkpoint")
 
 train_dataloader = DataLoader(train_dataset, batch_size=args['train_batchsize'],
-                              shuffle=True, num_workers=4)  # collate_fn=utils.collate_fn, pin_memory=True
+                              shuffle=True, num_workers=args['num_workers'])  # collate_fn=utils.collate_fn, pin_memory=True
 val_dataloader = DataLoader(val_dataset, batch_size=val_batchsize,
-                            shuffle=True, num_workers=4)  # collate_fn=utils.collate_fn, pin_memory=True
+                            shuffle=True, num_workers=args['num_workers'])  # collate_fn=utils.collate_fn, pin_memory=True
 test_dataloader = DataLoader(test_dataset, batch_size=test_batchsize,
-                             shuffle=False, num_workers=4)  # collate_fn=utils.collate_fn, pin_memory=True
+                             shuffle=False, num_workers=args['num_workers'])  # collate_fn=utils.collate_fn, pin_memory=True
 
 dataloaders = {'train': train_dataloader,
                'val': val_dataloader,
@@ -127,24 +129,26 @@ print("train size:", len(train_dataset))
 print("val size:", len(val_dataset))
 print("test size:", len(test_dataset))
 
-model, loss_history, score_history = train_model(model, criterion, optimizer, args['num_epochs'], device=device)
+model, loss_history, score_history = train_model(model, criterion, optimizer, args['num_epochs'],
+                                                 dataloaders, logging_steps, dataset_sizes, batch_sizes,
+                                                 device="cuda", CHECKPOINT_PATH="./model_checkpoint")
 
-plt.subplot(2,2,1)
+plt.subplot(2, 2, 1)
 plt.plot(score_history['val']['sp'], label="validation")
 plt.plot(score_history['train']['sp'], label="train")
 plt.legend()
 plt.title("sp")
-plt.subplot(2,2,2)
+plt.subplot(2, 2, 2)
 plt.plot(score_history['val']['sn'], label="validation")
 plt.plot(score_history['train']['sn'], label="train")
 plt.legend()
 plt.title("sn")
-plt.subplot(2,2,3)
+plt.subplot(2, 2, 3)
 plt.plot(score_history['val']['pp'], label="validation")
 plt.plot(score_history['train']['pp'], label="train")
 plt.legend()
 plt.title("pp")
-plt.subplot(2,2,4)
+plt.subplot(2, 2, 4)
 plt.plot(score_history['val']['pn'], label="validation")
 plt.plot(score_history['train']['pn'], label="train")
 plt.legend()
@@ -152,19 +156,18 @@ plt.title("pn")
 plt.savefig(details_history_path)
 plt.show()
 
-plt.subplot(1,2,1)
+plt.subplot(1, 2, 1)
 plt.plot(score_history['val']['score'], label="validation")
 plt.plot(score_history['train']['score'], label="train")
 plt.legend()
 plt.title("score")
-plt.subplot(1,2,2)
+plt.subplot(1, 2, 2)
 plt.plot(loss_history['val'], label="validation")
 plt.plot(loss_history['train'], label="train")
 plt.legend()
 plt.title("loss")
 plt.savefig(history_path)
 plt.show()
-
 
 # Saving the model
 

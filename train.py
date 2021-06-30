@@ -78,7 +78,7 @@ def train_model(model, criterion, optimizer, num_epochs,
         print("Loading checkpoint")
         checkpoint = torch.load(CHECKPOINT_PATH)
         model.load_state_dict(checkpoint['model_state_dict'])
-        model.cuda()
+        model.to(device)
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         startE = checkpoint['epoch']
     else:

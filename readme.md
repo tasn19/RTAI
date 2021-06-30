@@ -3,7 +3,15 @@ This repository contains RTAI’s submission for the 2021 [AI Against COVID-19: 
 The challenge of the first phase of the competition was to design a machine learning algorithm to detect COVID-19 positive and negative cases when given a dataset of chest X-rays. The competition dataset, created by [COVID-Net](https://alexswong.github.io/COVID-Net/), is available [here](https://www.kaggle.com/andyczhao/covidx-cxr2). 
 
 # How to Run
-Step 1
+To get the output for the competition
+```shell
+python test.py
+```
+The parameters are set to the final submission parameters. For options see:
+```shell
+python test.py -h
+```
+
 
 # Our Approach
 Our solution implements a neural network to identify chest X-rays as either COVID-19 positive or COVID-19-negative. We used the PyTorch torchvision package and Google Colab. We started by conducting a literature search to review existing work implementing neural networks to screen chest X-rays for abnormalities (COVID-19 and other lung diseases). The findings of our literature search inspired the design of our algorithm. The components of our approach are as follows:

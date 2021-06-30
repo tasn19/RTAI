@@ -10,12 +10,15 @@ from torchvision import transforms
 from data import MyTopCropTransform
 from torch.utils.data import DataLoader
 from data import CovidDataSet
+import torch.nn as nn
+from torch.optim import Adam
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--model_path", type=str, default="./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003", help="model to evaluate")
-ap.add_argument("--threshold", type=float, default=0.35, help="model to evaluate")
-ap.add_argument("--print_test", type=bool, default=False, help="print results on test data")
-ap.add_argument("--image_size", type=int, default=299)
+ap.add_argument("--threshold", type=float, default=0.35, help="probability threshold for the positive case")
+ap.add_argument("--print_test", type=bool, default=False, help="print results on the provided test images")
+ap.add_argument("--show_hist", type=bool, default=False, help="show histogram of the output probabilities")
+ap.add_argument("--image_size", type=int, default=299, choices={299})
 args = vars(ap.parse_args())
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -32,25 +35,34 @@ test_transform = transforms.Compose([
     # transforms.Resize(size=image_size), transforms.CenterCrop(image_size), # keeps the aspect ratio, crops the image
     transforms.Resize(size=(args['image_size'], args['image_size']))  # doesn't keep the aspect ratio
 ])
-test_dataset = CovidDataSet(test_metadata_path, test_images_path, test_transform)
-test_dataloader = DataLoader(test_dataset, batch_size=16, shuffle=False, num_workers=4)  # collate_fn=utils.collate_fn, pin_memory=True
-
-dataloaders = {'test': test_dataloader}
-logging_steps = {"test": len(dataloaders["test"]) // 10 + 1}
-dataset_sizes = {"test": len(test_dataset)}
-batch_sizes = {"test": 16}
 
 model = C19Xception(pretrained=False)
 model.to(device)
 model.load_state_dict(torch.load(model_path, map_location=device))
 
+# TODO clean the code for print_test: just evaluate the dataset results instead of calling run_epoch
 if args['print_test']:
-    epoch_loss, all_labels, all_pred_probs = run_epoch(model, None, None, phase='test')
+    test_dataset = CovidDataSet(test_metadata_path, test_images_path, test_transform)
+    test_dataloader = DataLoader(test_dataset, batch_size=16, shuffle=False,
+                                 num_workers=0)  # collate_fn=utils.collate_fn, pin_memory=True
+
+    dataloaders = {'test': test_dataloader}
+    logging_steps = {"test": len(dataloaders["test"]) // 10 + 1}
+    dataset_sizes = {"test": len(test_dataset)}
+    batch_sizes = {"test": 16}
+
+    optimizer = Adam(model.parameters(), lr=3e-3)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([50]).to(device), reduction='mean')
+
+    epoch_loss, all_labels, all_pred_probs = run_epoch(model, criterion, optimizer, 'test',
+                                                       dataloaders, logging_steps, dataset_sizes, batch_sizes,
+                                                       device)
     test_score, sp, sn, pp, pn = calculate_score(all_labels, (all_pred_probs > threshold).type(torch.uint8), return_separates=True)
 
     print("Loaded model test score: {:.6f}, sp: {:.6f}, sn: {:.6f}, pp:{:.6f}, pn:{:.6f}".format(test_score, sp, sn, pp, pn))
-    n, bins, patches = plt.hist(all_pred_probs, 100, facecolor='blue', alpha=0.5)
-    plt.show()
+    if args['show_hist']:
+        n, bins, patches = plt.hist(all_pred_probs, 100, facecolor='blue', alpha=0.5)
+        plt.show()
 
 competition_test_path = "./Data/competition_test/"
 
@@ -69,8 +81,9 @@ for p in tqdm(L):
 
 probs = torch.tensor(preds).sigmoid()
 
-# n, bins, patches = plt.hist(probs, 100, facecolor='blue', alpha=0.5)
-# plt.show()
+if args['show_hist']:
+    n, bins, patches = plt.hist(probs, 100, facecolor='blue', alpha=0.5)
+    plt.show()
 
 for p in probs > threshold:
     print(int(p))
