@@ -7,11 +7,19 @@ To get the output for the competition
 ```shell
 python test.py
 ```
-The parameters are set to the final submission parameters. For options see:
+The default hyper-parameters are set to the values of final submission. For options see:
 ```shell
 python test.py -h
 ```
 
+To train the model:
+```shell
+python run_train.py
+```
+The default hyper-parameters are set to the values used for training the final model. For options see:
+```shell
+python run_train.py -h
+```
 
 # Our Approach
 Our solution implements a neural network to identify chest X-rays as either COVID-19 positive or COVID-19-negative. We used the PyTorch torchvision package and Google Colab. We started by conducting a literature search to review existing work implementing neural networks to screen chest X-rays for abnormalities (COVID-19 and other lung diseases). The findings of our literature search inspired the design of our algorithm. The components of our approach are as follows:
