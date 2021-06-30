@@ -19,12 +19,16 @@ ap.add_argument("--image_size", type=int, default=299, help="resize images to th
 ap.add_argument("--val_ratio", type=float, default=0.1, help="ratio of data to used for validation")
 ap.add_argument("--lr", type=float, default=3e-3, help="learning rate")
 ap.add_argument("--num_epochs", type=int, default=10, help="number of epochs")
-ap.add_argument("--model_name", type=str, default='xception', choices={"xception"}, help="the model to train")
-ap.add_argument("--pretrained", type=bool, default=True, help="if True pre-trained weights on ImageNet will be used for initialization")
-ap.add_argument("--drop_out", type=bool, default=False, help="use drop_out before the last layer")
+ap.add_argument("--model_name", type=str, default='xception', choices={"xception"}, help="the model architecture to "
+                                                                                         "train")
+ap.add_argument("--pretrained", type=bool, default=True, help="if True pre-trained weights on ImageNet will be used "
+                                                              "for initialization")
+ap.add_argument("--drop_out", type=bool, default=False, help="if True use drop_out before the last layer")
 ap.add_argument("--BCE_pos_weight", type=int, default=50, help="the weight for the positive class error")
 ap.add_argument("--train_batchsize", type=int, default=32, help="")
 ap.add_argument("--models_folder", type=str, default="./", help="folder path to save the model")
+ap.add_argument("--class_name", type=str, default=None, help="name to save the model, if none, the hyperparameters "
+                                                             "will be used")
 ap.add_argument("--num_workers", type=int, default=4, help="num_workers for dataloader")
 args = vars(ap.parse_args())
 
@@ -69,14 +73,16 @@ train_dataset = torch.utils.data.Subset(train_dataset, train_indices)
 val_dataset = torch.utils.data.Subset(val_dataset, val_indices)
 
 PATH = args['models_folder']
-CLASS_NAME = args['model_name'] \
-             + "-epochs_" + str(args['num_epochs']) \
-             + "-pretrained_" + str(args['pretrained']) \
-             + "-batchsize_" + str(args['train_batchsize']) \
-             + "-posweight_" + str(args['BCE_pos_weight']) \
-             + "-lr_" + str(args['lr']) \
-             + "-drop_out_" + str(args['drop_out'])
-# saves the model with the model name WARNING: overwrites previous model is the same model name exists
+CLASS_NAME = args['class_name']
+if CLASS_NAME is None:
+    CLASS_NAME = args['model_name'] \
+                 + "-epochs_" + str(args['num_epochs']) \
+                 + "-pretrained_" + str(args['pretrained']) \
+                 + "-batchsize_" + str(args['train_batchsize']) \
+                 + "-posweight_" + str(args['BCE_pos_weight']) \
+                 + "-lr_" + str(args['lr']) \
+                 + "-drop_out_" + str(args['drop_out'])
+    # saves the model with the model name WARNING: overwrites previous model is the same model name exists
 model_path = os.path.join(PATH, CLASS_NAME)
 history_path = os.path.join(PATH, CLASS_NAME + "-history.png")
 details_history_path = os.path.join(PATH, CLASS_NAME + "-details_history.png")
