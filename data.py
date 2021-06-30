@@ -6,6 +6,8 @@ from torchvision import transforms
 
 label_dict = {'positive': 1, 'negative': 0}
 
+basic_transform = transforms.Compose([transforms.ToTensor()])
+
 
 class CovidDataSet(Dataset):
     def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):
@@ -14,7 +16,10 @@ class CovidDataSet(Dataset):
             self.img_labels = pd.read_csv(annotations_file, delimiter=" ",
                                           names=['patient id', 'filename', 'class', 'data source'])
         self.img_dir = img_dir
-        self.transform = transform
+        if transform is not None:
+            self.transform = transform
+        else:
+            self.transform = basic_transform
         self.target_transform = target_transform
         if self.img_labels is not None:
             self.len = len(self.img_labels)
@@ -37,32 +42,26 @@ class CovidDataSet(Dataset):
 
 
 class ImageSortingDataSet(Dataset):
-    def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):
-        self.img_labels = None
-        if annotations_file is not None:
-            self.img_labels = pd.read_csv(annotations_file, delimiter=" ",
-                                          names=['patient id', 'filename', 'class', 'data source'])
+    def __init__(self, img_dir, transform=None, target_transform=None):
         self.img_dir = img_dir
-        self.transform = transform
-        self.target_transform = target_transform
-        if self.img_labels is not None:
-            self.len = len(self.img_labels)
+        if transform is not None:
+            self.transform = transform
         else:
-            self.len = sum([len(glob.glob(img_dir + s)) for s in ['*.jpg', '*.png', '*.jpeg']])
+            self.transform = basic_transform
+        self.target_transform = target_transform
+        self.len = sum([len(glob.glob(img_dir + s)) for s in ['*.jpg', '*.png', '*.jpeg']])
+        self.L = os.listdir(img_dir)
+        self.L.sort(key=lambda x: int(os.path.splitext(x)[0]))
 
     def __len__(self):
         return self.len
 
     def __getitem__(self, idx):
-        img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 1])
-        # image = read_image(img_path)
+        img_path = os.path.join(self.img_dir, self.L[idx])
         image = Image.open(img_path).convert("RGB")
-        label = label_dict[self.img_labels.iloc[idx, 2]]
         if self.transform:
             image = self.transform(image)
-        if self.target_transform:
-            label = self.target_transform(label)
-        return image, label
+        return image
 
 
 class MyTopCropTransform:
