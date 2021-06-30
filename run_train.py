@@ -30,6 +30,7 @@ ap.add_argument("--models_folder", type=str, default="./", help="folder path to 
 ap.add_argument("--class_name", type=str, default=None, help="name to save the model, if none, the hyperparameters "
                                                              "will be used")
 ap.add_argument("--num_workers", type=int, default=4, help="num_workers for dataloader")
+ap.add_argument("--data_folder", type=str, default="Data/archive", help="address to the data folder")
 args = vars(ap.parse_args())
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -37,17 +38,18 @@ val_batchsize = 16
 test_batchsize = 16
 
 
-
 # TODO: try rescale and crop
 # TODO: normalize to -1 and 1
 # TODO: mix train and test for the final training(?)
 
 # data path in computer
-train_images_path = "./Data/archive/train/"
-train_metadata_path = "./Data/archive/train.txt"
-test_images_path = "./Data/archive/test/"
-test_metadata_path = "./Data/archive/test.txt"
-competition_test_path = "./Data/competition_test/"
+
+
+train_images_path = os.path.join(args['data_folder'], "train/")
+train_metadata_path = os.path.join(args['data_folder'], "train.txt")
+test_images_path = os.path.join(args['data_folder'], "test/")
+test_metadata_path = os.path.join(args['data_folder'], "test.txt")
+
 
 train_transform = transforms.Compose([
     transforms.ToTensor(),

@@ -14,11 +14,16 @@ import torch.nn as nn
 from torch.optim import Adam
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--model_path", type=str, default="./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003", help="model to evaluate")
+ap.add_argument("--model_path", type=str, default="./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32"
+                                                  "-posweight_50-lr_0.003", help="model to evaluate")
 ap.add_argument("--threshold", type=float, default=0.35, help="probability threshold for the positive case")
 ap.add_argument("--print_test", type=bool, default=False, help="print results on the provided test images")
 ap.add_argument("--show_hist", type=bool, default=False, help="show histogram of the output probabilities")
 ap.add_argument("--image_size", type=int, default=299, choices={299})
+ap.add_argument("--test_data_path", type=str, default="./Data/archive/", help="folder with a folder containing test "
+                                                                              "images (/test/) and test metadata ("
+                                                                              "test.txt)")
+ap.add_argument("--competition_test_path", type=str, default="./Data/competition_test/", help="folder with competition test images")
 args = vars(ap.parse_args())
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -26,8 +31,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 threshold = args['threshold']
 model_path = args['model_path']
 
-test_images_path = "./Data/archive/test/"
-test_metadata_path = "./Data/archive/test.txt"
+test_images_path = os.path.join(args['test_data_path'], "test/")
+test_metadata_path = os.path.join(args['test_data_path'], "test.txt")
 
 test_transform = transforms.Compose([
     transforms.ToTensor(),
@@ -64,7 +69,7 @@ if args['print_test']:
         n, bins, patches = plt.hist(all_pred_probs, 100, facecolor='blue', alpha=0.5)
         plt.show()
 
-competition_test_path = "./Data/competition_test/"
+competition_test_path = args['competition_test_path']
 
 L = os.listdir(competition_test_path)
 L.sort(key=lambda x: int(os.path.splitext(x)[0]))
