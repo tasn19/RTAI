@@ -9,7 +9,7 @@ import argparse
 from torchvision import transforms
 from data import MyTopCropTransform
 from torch.utils.data import DataLoader
-from data import CovidDataSet
+from data import CovidDataSet, ImageSortingDataSet
 import torch.nn as nn
 from torch.optim import Adam
 
@@ -19,11 +19,16 @@ ap.add_argument("--model_path", type=str, default="./TrainedModels/xception-epoc
 ap.add_argument("--threshold", type=float, default=0.35, help="probability threshold for the positive case")
 ap.add_argument("--print_test", type=bool, default=False, help="print results on the provided test images")
 ap.add_argument("--show_hist", type=bool, default=False, help="show histogram of the output probabilities")
-ap.add_argument("--image_size", type=int, default=299, choices={299})
+ap.add_argument("--batch_size", type=int, default=32, help="batch_size for loading test images")
+ap.add_argument("--num_workers", type=int, default=4, help="num_workers for the dataloader")
+ap.add_argument("--image_size", type=int, default=299, choices={299}, help="image_size must match the model's input")
 ap.add_argument("--test_data_path", type=str, default="./Data/archive/", help="folder with a folder containing test "
                                                                               "images (/test/) and test metadata ("
-                                                                              "test.txt)")
-ap.add_argument("--competition_test_path", type=str, default="./Data/competition_test/", help="folder with competition test images")
+                                                                              "test.txt), only needed if print_test "
+                                                                              "is True")
+ap.add_argument("--competition_test_path", type=str, default="./Data/competition_test/", help="folder with "
+                                                                                              "competition test "
+                                                                                              "images")
 args = vars(ap.parse_args())
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -48,13 +53,13 @@ model.load_state_dict(torch.load(model_path, map_location=device))
 # TODO clean the code for print_test: just evaluate the dataset results instead of calling run_epoch
 if args['print_test']:
     test_dataset = CovidDataSet(test_metadata_path, test_images_path, test_transform)
-    test_dataloader = DataLoader(test_dataset, batch_size=16, shuffle=False,
-                                 num_workers=0)  # collate_fn=utils.collate_fn, pin_memory=True
+    test_dataloader = DataLoader(test_dataset, batch_size=args['batch_size'], shuffle=False,
+                                 num_workers=args['num_workers'])  # collate_fn=utils.collate_fn, pin_memory=True
 
     dataloaders = {'test': test_dataloader}
     logging_steps = {"test": len(dataloaders["test"]) // 10 + 1}
     dataset_sizes = {"test": len(test_dataset)}
-    batch_sizes = {"test": 16}
+    batch_sizes = {"test": args['batch_size']}
 
     optimizer = Adam(model.parameters(), lr=3e-3)
     criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([50]).to(device), reduction='mean')
@@ -70,19 +75,26 @@ if args['print_test']:
         plt.show()
 
 competition_test_path = args['competition_test_path']
+competition_dataset = ImageSortingDataSet(competition_test_path, test_transform)
+competition_dataloader = DataLoader(competition_dataset, batch_size=args['batch_size'], shuffle=False,
+                                 num_workers=args['num_workers'])  # collate_fn=utils.collate_fn, pin_memory=True
 
-L = os.listdir(competition_test_path)
-L.sort(key=lambda x: int(os.path.splitext(x)[0]))
+# L = os.listdir(competition_test_path)
+# L.sort(key=lambda x: int(os.path.splitext(x)[0]))
 model.to(device)
 model.eval()
 preds = []
-for p in tqdm(L):
-    im_path = os.path.join(competition_test_path, p)
-    image = Image.open(im_path).convert("RGB")
-    image_tensor = test_transform(image)
-    image_tensor = torch.unsqueeze(image_tensor, 0).to(device)
-
-    preds.append(model.forward(image_tensor).detach().clone().squeeze())
+for ims in tqdm(competition_dataloader):
+    ims.to(device)
+    with torch.set_grad_enabled(False):
+        preds.extend(model(ims).detach().clone().squeeze())
+# for p in tqdm(L):
+#     im_path = os.path.join(competition_test_path, p)
+#     image = Image.open(im_path).convert("RGB")
+#     image_tensor = test_transform(image)
+#     image_tensor = torch.unsqueeze(image_tensor, 0).to(device)
+#
+#     preds.append(model.forward(image_tensor).detach().clone().squeeze())
 
 probs = torch.tensor(preds).sigmoid()
 

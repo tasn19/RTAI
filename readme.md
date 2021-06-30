@@ -5,10 +5,16 @@ The challenge of the first phase of the competition was to design a machine lear
 # How to Run
 **To get the output for the competition images:**
 ```shell
-!python test.py --model_path "./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003" --test_data_path "./Data/competition_test/" --threshold 0.35
+!python test.py --model_path "./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003" --test_data_path "./Data/competition_test/" --num_workers 0 --batch_size 32 --threshold 0.35
 ```
 <model_path> is the address of the model. Our final submission model can be found in: "./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003".
+
 <test_data_path> is the path to the folder containing the competition images.
+
+Set <batch_size> to indicate the number of images loaded and evaluated in each iteration.
+
+Set <num_workers> to 0 if any error occurs with non-zero values.
+
 The default hyper-parameters are set to the values of final submission. For options see:
 ```shell
 python test.py -h
@@ -16,14 +22,19 @@ python test.py -h
 
 **To train the model:**
 ```shell
-!python run_train.py --data_folder "path/to/archive" --models_folder "./folder/to/save/model" --class_name "my_trained_model" --num_epochs 10
+!python run_train.py --data_folder "path/to/archive" --models_folder "./folder/to/save/model" --class_name "my_model" --num_epochs 10
 ```
-The trained model is saved in <models_folder>/<class_name>. The program also creates a training checkpoint and two image files, containing plots of history of training, in the <models_folder> address.
+<data_folder> must include train and test folders containing image files and train.txt and test.txt as in the provided competition data.
+
+The trained model is saved in <models_folder>/<class_name>. Warning: If a checkpoint with <class_name>-Checkpoint name exists, training will continue from the checkpoint, if the model exists, it will be overwritten.
+
+In addition to saving the trained model, the program creates a training checkpoint and two image files, containing plots of history of training, in the <models_folder> address. The files are named <class_name>-Checkpoint, <class_name>-history and <class_name>-details_history.
+
 The default hyper-parameters are set to the values used for training the final model. For options see:
 ```shell
 python run_train.py -h
 ```
-Alternatively, run the code on Google Colab notebook RTAI_CovidCompetition_final.ipynb
+**Alternatively, run the code on Google Colab notebook RTAI_CovidCompetition_final.ipynb**
 
 # Our Approach
 Our solution implements a neural network to identify chest X-rays as either COVID-19 positive or COVID-19-negative. We used the PyTorch torchvision package and Google Colab. The Colab notebook we used for the competition is shared in this repo. Alternatively, python scripts to run the code are available as well.
