@@ -119,7 +119,8 @@ batch_sizes = {
     "test": test_batchsize
 }
 
-if (args['model_name'] == "xception"):
+
+if args['model_name'] == "xception":
     model = C19Xception(pretrained=args['pretrained'])
 else:
     model = C19ResNet(model=args['model_name'], pretrained=args['pretrained'])

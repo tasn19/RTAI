@@ -3,10 +3,12 @@ This repository contains RTAI’s submission for the 2021 [AI Against COVID-19: 
 The challenge of the first phase of the competition was to design a machine learning algorithm to detect COVID-19 positive and negative cases when given a dataset of chest X-rays. The competition dataset, created by [COVID-Net](https://alexswong.github.io/COVID-Net/), is available [here](https://www.kaggle.com/andyczhao/covidx-cxr2). 
 
 # How to Run
-To get the output for the competition
+To get the output for the competition images:
 ```shell
-python test.py
+!python test.py --model_path "./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003" --test_data_path "./Data/competition_test/" --threshold 0.35
 ```
+<model_path> is the address of the model. Our final submission model can be found in: "./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003".
+<test_data_path> is the path to the folder containing the competition images.
 The default hyper-parameters are set to the values of final submission. For options see:
 ```shell
 python test.py -h
@@ -14,8 +16,9 @@ python test.py -h
 
 To train the model:
 ```shell
-python run_train.py
+!python run_train.py --data_folder "path/to/archive" --models_folder "./folder/to/save/model" --class_name "my_trained_model" --num_epochs 10
 ```
+The trained model is saved in <models_folder>/<class_name>. The program also creates a training checkpoint and two image files, containing plots of history of training, in the <models_folder> address.
 The default hyper-parameters are set to the values used for training the final model. For options see:
 ```shell
 python run_train.py -h
