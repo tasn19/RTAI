@@ -117,7 +117,9 @@ def train_model(model, criterion, optimizer, num_epochs,
             score_history[phase]['pp'].append(pp)
             score_history[phase]['pn'].append(pn)
 
-        epoch_loss, all_labels, all_pred_probs = run_epoch(model, criterion, optimizer, phase='test')
+        epoch_loss, all_labels, all_pred_probs = run_epoch(model, criterion, optimizer, 'test',
+                                                           dataloaders, logging_steps, dataset_sizes, batch_sizes,
+                                                           device)
         test_score, sp, sn, pp, pn = calculate_score(all_labels, (all_pred_probs > 0.5).type(torch.int8),
                                                      return_separates=True)
         if test_score >= best_test_score:
