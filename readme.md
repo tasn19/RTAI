@@ -24,7 +24,9 @@ We crop out the top 8% of the x-ray images to prevent the neural network from pi
 We used an Xception[3] model pretrained on ImageNet with a modified classification head for binary(?) classification. We reviewed research papers and found that [4] reported high performance with the Xception model for COVID-19 detection from chest X-rays compared to other architectures. In our experiments we tested ResNet-18 and ResNet-50 models and found they did not perform as well as the Xception model. The dataset used here is imbalanced; only 13.5% of the chest x-rays are for COVID-19 positive cases. To account for this imbalance, we used weighted binary cross-entropy loss as our loss function.
 
 #### Hyperparameter Settings and Tuning
-For training, Adam optimizer was used with batches of size 32. To improve our algorithm’s performance, we experimented with different BCE weights, learning rates, number of epochs, and with and without a pretrained model and dropout. The settings which yielded the best model are: BCE weight of 50, learning rate of 0.003 using pretrained Xception trained for 10 epochs.
+For training, Adam optimizer was used with batches of size 32. 
+We use weighted BCE loss to account for the imbalanced dataset. This approach gives us control over the sesitivitiy of the final model. 
+To improve our algorithm’s performance, we experimented with different BCE weights, learning rates, number of epochs, and with and without a pretrained model and dropout. The settings which yielded the best model are: BCE weight of 50, learning rate of 0.003 using pretrained Xception trained for 10 epochs.
 
 # Evaluation Criteria
 The algorithm is evaluated according to the following score:

@@ -16,13 +16,13 @@ from Models.C19ResNet import C19ResNet
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--image_size", type=int, default=299, help="resize images to this size")
-ap.add_argument("--val_ratio", type=float, default=0.1, help="")
-ap.add_argument("--lr", type=float, default=3e-3, help="")
-ap.add_argument("--num_epochs", type=int, default=10, help="")
-ap.add_argument("--model_name", type=str, default='xception', help="")
-ap.add_argument("--pretrained", type=bool, default=True, help="")
-ap.add_argument("--drop_out", type=bool, default=False, help="")
-ap.add_argument("--BCE_pos_weight", type=int, default=50, help="")
+ap.add_argument("--val_ratio", type=float, default=0.1, help="ratio of data to used for validation")
+ap.add_argument("--lr", type=float, default=3e-3, help="learning rate")
+ap.add_argument("--num_epochs", type=int, default=10, help="number of epochs")
+ap.add_argument("--model_name", type=str, default='xception', choices={"xception"}, help="the model to train")
+ap.add_argument("--pretrained", type=bool, default=True, help="if True pre-trained weights on ImageNet will be used for initialization")
+ap.add_argument("--drop_out", type=bool, default=False, help="use drop_out before the last layer")
+ap.add_argument("--BCE_pos_weight", type=int, default=50, help="weight of the positive class error")
 ap.add_argument("--train_batchsize", type=int, default=32, help="")
 ap.add_argument("--models_folder", type=str, default="./", help="folder path to save the model")
 ap.add_argument("--num_workers", type=int, default=4, help="num_workers for dataloader")
@@ -131,7 +131,7 @@ print("test size:", len(test_dataset))
 
 model, loss_history, score_history = train_model(model, criterion, optimizer, args['num_epochs'],
                                                  dataloaders, logging_steps, dataset_sizes, batch_sizes,
-                                                 device="cuda", CHECKPOINT_PATH="./model_checkpoint")
+                                                 device, CHECKPOINT_PATH)
 
 plt.subplot(2, 2, 1)
 plt.plot(score_history['val']['sp'], label="validation")
