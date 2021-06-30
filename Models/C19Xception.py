@@ -1,3 +1,4 @@
+# Xception model code based on https://github.com/tstandley/Xception-PyTorch/blob/master/xception.py
 """
 Creates an Xception Model as defined in:
 Francois Chollet
