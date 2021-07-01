@@ -64,6 +64,27 @@ class ImageSortingDataSet(Dataset):
         return image
 
 
+class ImageListDataSet(Dataset):
+    def __init__(self, img_list, transform=None, target_transform=None):
+        self.img_list = img_list
+        if transform is not None:
+            self.transform = transform
+        else:
+            self.transform = basic_transform
+        self.target_transform = target_transform
+        self.len = len(img_list)
+
+    def __len__(self):
+        return self.len
+
+    def __getitem__(self, idx):
+        img_path = self.img_list[idx]
+        image = Image.open(img_path).convert("RGB")
+        if self.transform:
+            image = self.transform(image)
+        return image
+
+
 class MyTopCropTransform:
     """
     crop the top <ratio> of the image
