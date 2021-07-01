@@ -3,21 +3,22 @@ This repository contains RTAI’s submission for the 2021 [AI Against COVID-19: 
 The challenge of the first phase of the competition was to design a machine learning algorithm to detect COVID-19 positive and negative cases when given a dataset of chest X-rays. The competition dataset, created by [COVID-Net](https://alexswong.github.io/COVID-Net/), is available [here](https://www.kaggle.com/andyczhao/covidx-cxr2). 
 
 # How to Run
+**Running eval.py**
+```shell
+
+```
+
+
 **To get the output for the competition images:**
 ```shell
-!python test.py --model_path "./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003" --test_data_path "./Data/competition_test/" --num_workers 0 --batch_size 32 --threshold 0.35
+!python eval.py  \["path/to/img1","path/to/im2"\] "path/to/the/model"
 ```
-<model_path> is the address of the model. Our final submission model can be found in: "./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003".
+optional arguments: 
+Set --batch_size to indicate the number of images loaded and evaluated at in one pass. The default is 32. It can be set to 1 to use less memory.
 
-<test_data_path> is the path to the folder containing the competition images.
-
-Set <batch_size> to indicate the number of images loaded and evaluated in each iteration.
-
-Set <num_workers> to 0 if any error occurs with non-zero values.
-
-The default hyper-parameters are set to the values of final submission. For options see:
+For other options see:
 ```shell
-python test.py -h
+python eval.py -h
 ```
 
 **To train the model:**
@@ -34,6 +35,7 @@ The default hyper-parameters are set to the values used for training the final m
 ```shell
 python run_train.py -h
 ```
+
 **Alternatively, run the code on Google Colab notebook RTAI_CovidCompetition_final.ipynb**
 
 # Our Approach
