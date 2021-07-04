@@ -53,7 +53,11 @@ preds = []
 for ims in competition_dataloader:
     ims.to(device)
     with torch.set_grad_enabled(False):
-        preds.extend(model(ims).detach().clone().squeeze())
+        if args['batch_size']>32:
+            preds.extend(model(ims).detach().clone().squeeze())
+        else:
+            preds.extend(model(ims).detach().clone())
+    # print(preds)
 # for p in tqdm(L):
 #     im_path = os.path.join(competition_test_path, p)
 #     image = Image.open(im_path).convert("RGB")
