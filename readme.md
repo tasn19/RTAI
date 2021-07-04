@@ -4,10 +4,6 @@ The challenge of the first phase of the competition was to design a machine lear
 
 # How to Run
 **Running eval.py**
-```shell
-
-```
-
 
 **To get the output for the competition images:**
 ```shell
