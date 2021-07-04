@@ -9,9 +9,12 @@ The challenge of the first phase of the competition was to design a machine lear
 ```shell
 !python eval.py  \["path/to/img1","path/to/im2"\] "path/to/the/model"
 ```
+
+The trained model is saved in:
+TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003
+
 optional arguments: 
 Set --batch_size to indicate the number of images loaded and evaluated in one pass. The default is 32. It can be set to 1 to use less memory.
-The trained model is saved in TrainedModels/xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003
 
 For other options see:
 ```shell
