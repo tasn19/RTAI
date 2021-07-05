@@ -70,4 +70,8 @@ probs = torch.tensor(preds).sigmoid()
 
 # for p in probs > args['threshold']:
 #     print(int(p))
-print([int(p) for p in probs > args['threshold']])
+# print([int(p) for p in probs > args['threshold']])
+print("[", end="")
+for p in probs > args['threshold']:
+    print(int(p), end=",")
+print("]", end="")
