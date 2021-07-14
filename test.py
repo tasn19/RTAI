@@ -85,7 +85,7 @@ model.to(device)
 model.eval()
 preds = []
 for ims in tqdm(competition_dataloader):
-    ims.to(device)
+    ims = ims.to(device)
     with torch.set_grad_enabled(False):
         preds.extend(model(ims).detach().clone().squeeze())
 # for p in tqdm(L):
