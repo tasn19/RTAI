@@ -53,7 +53,7 @@ preds = []
 for ims in competition_dataloader:
     ims.to(device)
     with torch.set_grad_enabled(False):
-        if args['batch_size']>32:
+        if args['batch_size'] > 1:
             preds.extend(model(ims).detach().clone().squeeze())
         else:
             preds.extend(model(ims).detach().clone())
