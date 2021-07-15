@@ -1,9 +1,9 @@
-import torch
+import time
 import os
+import torch
 from Models.C19Xception import C19Xception
 import matplotlib.pyplot as plt
 from train import run_epoch, calculate_score
-import PIL.Image as Image
 from tqdm import tqdm
 import argparse
 from torchvision import transforms
@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader
 from data import CovidDataSet, ImageSortingDataSet
 import torch.nn as nn
 from torch.optim import Adam
+from sklearn.metrics import roc_auc_score, roc_curve, precision_score
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--model_path", type=str, default="./TrainedModels/xception-epochs_10-pretrained_True-batchsize_32"
@@ -64,12 +65,26 @@ if args['print_test']:
     optimizer = Adam(model.parameters(), lr=3e-3)
     criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([50]).to(device), reduction='mean')
 
+    t = time.time()
     epoch_loss, all_labels, all_pred_probs = run_epoch(model, criterion, optimizer, 'test',
                                                        dataloaders, logging_steps, dataset_sizes, batch_sizes,
                                                        device)
+    print("TOOK:{:.6f} seconds".format(time.time()-t))
     test_score, sp, sn, pp, pn = calculate_score(all_labels, (all_pred_probs > threshold).type(torch.uint8), return_separates=True)
 
+    rocauc = roc_auc_score(all_labels, all_pred_probs)
+    print("roc_auc:{:.6f}".format(rocauc))
+
+    ppvn = precision_score(all_labels, (all_pred_probs > threshold).type(torch.uint8), pos_label=0)
+    print("ppvn:{:.6f}".format(ppvn))
+
+    fpr, tpr, thresholds = roc_curve([1, 1, 1, 1, 0, 0, 0], [0.9, 0.6, 0.7, 0.4, 0.5, 0.3, 0.2])
+    plt.plot(fpr, tpr)
+    plt.title("roc curve")
+    plt.show()
+
     print("Loaded model test score: {:.6f}, sp: {:.6f}, sn: {:.6f}, pp:{:.6f}, pn:{:.6f}".format(test_score, sp, sn, pp, pn))
+
     if args['show_hist']:
         n, bins, patches = plt.hist(all_pred_probs, 100, facecolor='blue', alpha=0.5)
         plt.show()
@@ -81,6 +96,8 @@ competition_dataloader = DataLoader(competition_dataset, batch_size=args['batch_
 
 # L = os.listdir(competition_test_path)
 # L.sort(key=lambda x: int(os.path.splitext(x)[0]))
+exit()
+
 model.to(device)
 model.eval()
 preds = []
