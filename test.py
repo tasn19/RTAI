@@ -78,7 +78,7 @@ if args['print_test']:
     ppvn = precision_score(all_labels, (all_pred_probs > threshold).type(torch.uint8), pos_label=0)
     print("ppvn:{:.6f}".format(ppvn))
 
-    fpr, tpr, thresholds = roc_curve([1, 1, 1, 1, 0, 0, 0], [0.9, 0.6, 0.7, 0.4, 0.5, 0.3, 0.2])
+    fpr, tpr, thresholds = roc_curve(all_labels, all_pred_probs)
     plt.plot(fpr, tpr)
     plt.title("roc curve")
     plt.show()
