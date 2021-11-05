@@ -1,18 +1,14 @@
-import time
-import os, sys
-import torch
-from Models.C19Xception import C19Xception
+import os
+import sys
+
 import matplotlib.pyplot as plt
-from train import run_epoch, calculate_score
-from tqdm import tqdm
-import argparse
-from torchvision import transforms
-from data import MyTopCropTransform
+import torch
 from torch.utils.data import DataLoader
-from data import CovidDataSet, ImageSortingDataSet
-import torch.nn as nn
-from torch.optim import Adam
-from sklearn.metrics import roc_auc_score, roc_curve, precision_score
+from torchvision import transforms
+
+from Models.C19Xception import C19Xception
+from data import CovidDataSet
+from data import MyTopCropTransform
 
 sys.path.insert(1, "./grad-cam-pytorch-master")
 import grad_cam
