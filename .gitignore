@@ -3,3 +3,4 @@ Data/archive
 .DS_Store
 __pycache__/
 Models/__pycache__/
+temp.py
