@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<title>W3.CSS Template</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+<style>
+body, html {
+  height: 100%;
+  font-family: "Inconsolata", sans-serif;
+}
+
+.bgimg {
+  background-position: center;
+  background-size: cover;
+  background-image: url("static/img/debora-pilati-unsplash.jpg");
+  min-height: 75%;
+}
+
+.menu {
+  display: none;
+}
+</style>
+<body>
+
+<!-- Links (sit on top) -->
+<div class="w3-top">
+  <div class="w3-row w3-padding w3-black">
+    <div class="w3-col s3">
+      <a href="#" class="w3-button w3-block w3-black">HOME</a>
+    </div>
+    <div class="w3-col s3">
+      <a href="#about" class="w3-button w3-block w3-black">ABOUT</a>
+    </div>
+    <div class="w3-col s3">
+      <a href="#tool" class="w3-button w3-block w3-black">TOOL</a>
+    </div>
+    <div class="w3-col s3">
+      <a href="#where" class="w3-button w3-block w3-black">CONTACT</a>
+    </div>
+  </div>
+</div>
+
+<!-- Header with image -->
+<header class="bgimg w3-display-container w3-grayscale-min" id="home">
+  <div class="w3-display-bottomleft w3-center w3-padding-large w3-hide-small">
+    <span class="w3-tag">RTAI</span>
+  </div>
+  <div class="w3-display-middle w3-center">
+    <span class="w3-text-white" style="font-size:60px">COVID-19 Screening Tool</span>
+  </div>
+</header>
+
+<!-- Add a background color and large text to the whole page -->
+<div class="w3-sand w3-grayscale w3-large">
+
+<!-- About Container -->
+<div class="w3-container" id="about">
+  <div class="w3-content" style="max-width:700px">
+    <h5 class="w3-center w3-padding-64"><span class="w3-tag w3-wide">ABOUT RTAI</span></h5>
+    <p>This AI tool implements a neural network to screen chest X-rays for COVID-19.</p>
+    <p>For details on how to tool works, checkout out our <a href="https://github.com/tasn19/RTAI">github page</a> </p>
+
+</div>
+
+<!-- Screening Tool Container -->
+<div class="w3-container" id="tool">
+  <div class="w3-content" style="max-width:700px">
+    <h5 class="w3-center w3-padding-64"><span class="w3-tag w3-wide">SCREENING TOOL</span></h5>
+    <p>Upload your image and click predict.</p>
+        <!--form action="/action_page.php"> doesn't work why??
+            <label for="img">Select image:</label>
+            <input type="file" id="file" name="file" accept="image/*">
+            <input type="submit">
+        </form -->
+    <form class="form-signin" method=post enctype=multipart/form-data>
+		<p>Please Upload The Image</p>
+		<input type="file" name="file" class="form-control-file" id="inputfile"  onchange="preview_image(event)">
+		<br />
+        <img id="output-image" class="rounded mx-auto d-block"/>
+        <br />
+		<button class="btn btn-lg bddtn-primary btn-block" type="submit">Predict</button>
+
+	</form>
+    <body class="text-center">
+        {% block content %}{% endblock %}
+    </body>
+
+
+    <!-- TO DO: display result on same page without reload and display annotated image -->
+<!-- div class="w3-container" id="result">
+  <div class="w3-content" style="max-width:700px">
+    <h5 class="w3-center w3-padding-64"><span class="w3-tag w3-wide">SCREENING RESULT</span></h5>
+    <p>The result of the AI chest X-ray screening is {{ detection }} with {{ prediction }} % confidence.</p>
+    <p>For details on how to tool works, checkout out our <a href="https://github.com/tasn19/RTAI">github page</a> </p>
+
+  </div>
+</div -->
+
+<!-- script type="text/javascript">
+		function preview_image(event) {
+			var reader = new FileReader();
+			reader.onload = function(){
+				var output = document.getElementById('output-image')
+				output.src = reader.result;
+			}
+			reader.readAsDataURL(event.target.files[0]);
+		}
+	</script -->
+
+
+
+<!-- Contact Container -->
+<div class="w3-container" id="where" style="padding-bottom:32px;">
+  <div class="w3-content" style="max-width:700px">
+    <h5 class="w3-center w3-padding-48"><span class="w3-tag w3-wide">QUESTIONS OR COMMENTS?</span></h5>
+    <p>Send us a message</p>
+    <form action="/action_page.php" target="_blank">
+      <p><input class="w3-input w3-padding-16 w3-border" type="text" placeholder="Name" required name="Name"></p>
+      <p><input class="w3-input w3-padding-16 w3-border" type="text" placeholder="Your email" required name="Your email"></p>
+      <p><input class="w3-input w3-padding-16 w3-border" type="text" placeholder="Query/Message" required name="Query"></p>
+      <p><button class="w3-button w3-black" type="submit">SEND MESSAGE</button></p>
+    </form>
+  <p>Or send us an email: [ADD EMAIL ADDRESS]</p>
+  <img src="/w3images/map.jpg" class="w3-image" style="width:100%">
+  </div>
+</div>
+
+<!-- End page content -->
+</div>
+
+<!-- Footer -->
+<footer class="w3-center w3-light-grey w3-padding-48 w3-large">
+  <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a></p>
+</footer>
+
+<script>
+// Tabbed Menu
+function openMenu(evt, menuName) {
+  var i, x, tablinks;
+  x = document.getElementsByClassName("menu");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < x.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" w3-dark-grey", "");
+  }
+  document.getElementById(menuName).style.display = "block";
+  evt.currentTarget.firstElementChild.className += " w3-dark-grey";
+}
+document.getElementById("myLink").click();
+</script>
+
+</body>
+</html>
