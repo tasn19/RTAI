@@ -1,15 +1,12 @@
 # webpage code modified from https://towardsdatascience.com/build-a-web-application-for-predicting-apple-leaf-diseases-using-pytorch-and-flask-413f9fa9276a
 from flask import Flask, request, render_template, redirect, flash, jsonify
 from werkzeug.utils import secure_filename
-import sys
-
 
 import torch
 import io
 from torchvision import transforms
 
 from PIL import Image
-sys.path.insert(1, "D:\Programming\RTAI\RTAI")
 from Models.C19Xception import C19Xception
 from data import MyTopCropTransform
 
@@ -21,7 +18,7 @@ app = Flask(__name__)
 device = 'cpu'
 model = C19Xception(pretrained=False)
 model.to(device)
-model.load_state_dict(torch.load('D:\Programming\RTAI\RTAI\xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003.pth', map_location=device))
+model.load_state_dict(torch.load('RTAI\TrainedModels\xception-epochs_10-pretrained_True-batchsize_32-posweight_50-lr_0.003.pth', map_location=device))
 
 # transform image
 def transform(image_bytes):
