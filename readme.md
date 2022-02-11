@@ -2,6 +2,8 @@ This repository contains RTAI’s submission for the 2021 [AI Against COVID-19: 
 
 The challenge of the first phase of the competition was to design a machine learning algorithm to detect COVID-19 positive and negative cases when given a dataset of chest X-rays. The competition dataset, created by [COVID-Net](https://alexswong.github.io/COVID-Net/), is available [here](https://www.kaggle.com/andyczhao/covidx-cxr2). 
 
+[COVID-19 Screening App](https://github.com/tasn19/RTAI_Website) 
+
 # How to Run
 **Running eval.py**
 
